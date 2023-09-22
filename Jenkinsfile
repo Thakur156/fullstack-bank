@@ -1,33 +1,32 @@
 pipeline {
     agent any
     
-    tools{
+    tools {
         jdk 'jdk17'
         nodejs 'node16'
-        
     }
     
-    environment{
-        SCANNER_HOME= tool 'sonar-scanner'
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
     }
-        
+    
+    stages {
         stage('OWASP FS SCAN') {
             steps {
                 dependencyCheck additionalArguments: '--scan ./app/backend --disableYarnAudit --disableNodeAudit', odcInstallation: 'DC'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
         
         stage('SONARQUBE ANALYSIS') {
             steps {
                 withSonarQubeEnv('sonar') {
-                    sh " $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Bank -Dsonar.projectKey=Bank "
+                    sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Bank -Dsonar.projectKey=Bank"
                 }
             }
         }
         
-        
-         stage('Install Dependencies') {
+        stage('Install Dependencies') {
             steps {
                 sh "npm install"
             }
@@ -41,7 +40,7 @@ pipeline {
             }
         }
         
-        stage('frontend') {
+        stage('Frontend') {
             steps {
                 dir('/root/.jenkins/workspace/Bank/app/frontend') {
                     sh "npm install"
@@ -49,7 +48,7 @@ pipeline {
             }
         }
         
-        stage('Deploy to Conatiner') {
+        stage('Deploy to Container') {
             steps {
                 sh "npm run compose:up -d"
             }
