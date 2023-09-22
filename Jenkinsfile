@@ -7,7 +7,7 @@ pipeline {
     }
     
     environment {
-        SCANNER_HOME = tool 'sonar-scanner'
+        SCANNER_HOME = tool 'sonar-server'
     }
     
     stages {
@@ -21,7 +21,7 @@ pipeline {
         stage('SONARQUBE ANALYSIS') {
             steps {
                 withSonarQubeEnv('sonar') {
-                    sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Bank -Dsonar.projectKey=Bank"
+                    sh "$SCANNER_HOME/bin/sonar-server -Dsonar.projectName=Bank -Dsonar.projectKey=Bank"
                 }
             }
         }
